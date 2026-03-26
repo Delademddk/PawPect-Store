@@ -1,1 +1,13 @@
+@font-face {
+  font-family: PlusJakarta;
+  src: url("../src/assets/fonts/PlusJakartaSans-Regular.ttf");
+  font-family: LiberationSerif;
+  src: url("../src/assets/fonts/LiberationSerif-Regular.ttf")
+}
+
 @import "tailwindcss";
+
+@theme {
+  --font-PlusJakarta: PlusJakarta, "sans-serif";
+  --font-LiberationSerif: LiberationSerif, "sans-serif";
+}
