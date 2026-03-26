@@ -1,24 +1,35 @@
 import PawIcon from "../../assets/pawIcon.svg";
 import ProfileIcon from "../../assets/profileIcon.svg";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
+import { Label } from "@/components/ui/label";
+import { Field } from "@/components/ui/field";
+import { MailIcon, EyeOffIcon, LockIcon } from "lucide-react";
+import { ArrowRightIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
 export default function LoginPage() {
   return (
     <div className="w-full bg-[#FAF9F6] h-screen">
       <div className="absolute top-10 left-10 w-64 h-64 rounded-full bg-[radial-gradient(circle,rgba(144,239,239,0.7)_0%,rgba(144,239,239,0.4)_40%,rgba(144,239,239,0.15)_70%,transparent_100%)] blur-3xl opacity-70"></div>
       <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-[radial-gradient(circle,rgba(236,72,153,0.6)_0%,rgba(236,72,153,0.3)_40%,rgba(236,72,153,0.1)_70%,transparent_100%)] blur-3xl opacity-70"></div>
       <div className="grid place-items-center min-h-screen">
-        <div className="w-[55%] h-[65%] m-auto flex z-1 rounded-4xl overflow-hidden">
+        <div className="w-[80%] h-[70%]  m-auto flex z-1 rounded-4xl overflow-hidden">
           {/* Left side */}
           <div className="w-[50%] h-full bg-linear-to-b from-[#9F402D] to-[#E2725B] p-8">
             <div className="flex items-center gap-1.5 mb-5">
-              <img className="h-4 w-4" src={PawIcon} alt="Paw icon" />
-              <h2 className="text-white text-lg font-extrabold">
+              <img className="h-7 w-7" src={PawIcon} alt="Paw icon" />
+              <h2 className="text-white text-[30px] font-extrabold font-PlusJarta">
                 Pawfect Pals
               </h2>
             </div>
-            <p className="text-white font-PlusJakarta  text-4xl font-bold">
+            <p className="text-white font-PlusJakarta!  text-5xl font-bold">
               Every tail tells a story.
             </p>
-            <p className=" text-[#FFDAD3] font-PlusJakarta text-4xl font-bold">
+            <p className=" text-[#FFDAD3] font-PlusJakarta text-5xl font-bold">
               Let's write the next chapter.
             </p>
             <div className="w-full rounded-3xl p-5 bg-[#FFFFFFCC] space-y-1 mt-3.5">
@@ -36,7 +47,7 @@ export default function LoginPage() {
                   />
                 </div>
                 <div>
-                  <p className="text-[10px] text-[#5A0D02] font-bold">
+                  <p className="text-[10px] text-[#5A0D02] font-bold font-PlusJarta">
                     Sarah Jenkins
                   </p>
                   <p className="text-[7px] text-[#5A0D02] font-LiberationSerif ">
@@ -50,6 +61,53 @@ export default function LoginPage() {
           <div className="w-[50%] h-full bg-white p-8">
             <h2>Welcome Back</h2>
             <p>Enter your credentials to access the sanctuary dashboard.</p>
+            <div>
+              <Label htmlFor="password">Email Address</Label>
+              <InputGroup className="max-w-sm">
+                <InputGroupInput type="email" placeholder="Enter your email" />
+                <InputGroupAddon>
+                  <MailIcon />
+                </InputGroupAddon>
+              </InputGroup>
+            </div>
+            <div>
+              <Field className="max-w-sm">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">Password</Label>
+
+                  <button className="text-sm text-primary hover:underline">
+                    Forgot password?
+                  </button>
+                </div>
+                <InputGroup>
+                  <InputGroupAddon align="inline-start">
+                    <LockIcon />
+                  </InputGroupAddon>
+
+                  <InputGroupInput
+                    id="inline-end-input"
+                    type="password"
+                    placeholder="Enter password"
+                  />
+                  <InputGroupAddon align="inline-end">
+                    <EyeOffIcon />
+                  </InputGroupAddon>
+                </InputGroup>
+              </Field>
+            </div>
+            <div>
+              <input type="radio" id="loggedIn" />
+              <label htmlFor="loggedIn">Keep me logged in for 30 days</label>
+            </div>
+            <Button variant="outline">
+              Log In
+              <ArrowRightIcon />
+            </Button>
+            <div className="h-0.5 w-full bg-black"></div>
+            <div className="flex ">
+              <p>New to the team? </p>
+              <button>Contact Administrator</button>
+            </div>
           </div>
         </div>
       </div>
