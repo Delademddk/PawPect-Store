@@ -1,17 +1,12 @@
 import PawIcon from "../../assets/pawIcon.svg";
 import ProfileIcon from "../../assets/profileIcon.svg";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
-import { Label } from "@/components/ui/label";
-import { Field } from "@/components/ui/field";
-import { MailIcon, EyeOffIcon, LockIcon } from "lucide-react";
-import { ArrowRightIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import LoginForm from "@/components/LoginForm";
 
-export default function LoginPage() {
+type Props = {
+  onLogin: () => void;
+};
+
+export default function LoginPage({ onLogin }: Props) {
   return (
     <div className="w-full bg-[#FAF9F6] h-screen">
       <div className="absolute top-10 left-10 w-64 h-64 rounded-full bg-[radial-gradient(circle,rgba(144,239,239,0.7)_0%,rgba(144,239,239,0.4)_40%,rgba(144,239,239,0.15)_70%,transparent_100%)] blur-3xl opacity-70"></div>
@@ -61,48 +56,7 @@ export default function LoginPage() {
           <div className="w-[50%] h-full bg-white p-8">
             <h2>Welcome Back</h2>
             <p>Enter your credentials to access the sanctuary dashboard.</p>
-            <div>
-              <Label htmlFor="password">Email Address</Label>
-              <InputGroup className="max-w-sm">
-                <InputGroupInput type="email" placeholder="Enter your email" />
-                <InputGroupAddon>
-                  <MailIcon />
-                </InputGroupAddon>
-              </InputGroup>
-            </div>
-            <div>
-              <Field className="max-w-sm">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
-
-                  <button className="text-sm text-primary hover:underline">
-                    Forgot password?
-                  </button>
-                </div>
-                <InputGroup>
-                  <InputGroupAddon align="inline-start">
-                    <LockIcon />
-                  </InputGroupAddon>
-
-                  <InputGroupInput
-                    id="inline-end-input"
-                    type="password"
-                    placeholder="Enter password"
-                  />
-                  <InputGroupAddon align="inline-end">
-                    <EyeOffIcon />
-                  </InputGroupAddon>
-                </InputGroup>
-              </Field>
-            </div>
-            <div>
-              <input type="radio" id="loggedIn" />
-              <label htmlFor="loggedIn">Keep me logged in for 30 days</label>
-            </div>
-            <Button variant="outline">
-              Log In
-              <ArrowRightIcon />
-            </Button>
+            <LoginForm onLogin={onLogin} />
             <div className="h-0.5 w-full bg-black"></div>
             <div className="flex ">
               <p>New to the team? </p>
