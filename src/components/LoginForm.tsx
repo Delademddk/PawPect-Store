@@ -4,7 +4,6 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label";
-import { Field } from "@/components/ui/field";
 import { MailIcon, EyeOffIcon, LockIcon, ArrowRightIcon } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -53,9 +52,17 @@ export default function LoginForm({ onLogin }: Props) {
 
   return (
     <div>
-      <div>
-        <Label htmlFor="email">Email Address</Label>
-        <InputGroup className="max-w-sm">
+      <div className="mb-5 md:mb-6">
+        <Label
+          className="text-xs md:text-sm mb-2 ml-1 font-PlusJarta text-[#56423E] font-semibold"
+          htmlFor="email"
+        >
+          Email Address
+        </Label>
+
+        <InputGroup
+          className={`${errors.email ? "border-2 border-[#BA1A1A]" : "border-none"} w-full px-4 md:px-5 bg-[#E3E2E0] h-12 md:h-14 rounded-full`}
+        >
           <InputGroupInput
             id="email"
             type="email"
@@ -66,20 +73,32 @@ export default function LoginForm({ onLogin }: Props) {
             <MailIcon />
           </InputGroupAddon>
         </InputGroup>
+
         {errors.email && (
-          <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+          <p className="text-[#BA1A1A] text-xs md:text-sm mt-1">
+            {errors.email}
+          </p>
         )}
       </div>
-      <div>
-        <Field className="max-w-sm">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="password">Password</Label>
 
-            <button className="text-sm text-primary hover:underline">
+      <div>
+        <div className="mb-5 md:mb-6">
+          <div className="flex items-center justify-between">
+            <Label
+              className="text-xs md:text-sm mb-2 ml-1 font-PlusJarta text-[#56423E] font-semibold"
+              htmlFor="password"
+            >
+              Password
+            </Label>
+
+            <button className="text-xs md:text-sm text-primary">
               Forgot password?
             </button>
           </div>
-          <InputGroup>
+
+          <InputGroup
+            className={`${errors.email ? "border-2 border-[#BA1A1A]" : "border-none"} w-full px-4 md:px-5 bg-[#E3E2E0] h-12 md:h-14 rounded-full`}
+          >
             <InputGroupAddon align="inline-start">
               <LockIcon />
             </InputGroupAddon>
@@ -90,20 +109,29 @@ export default function LoginForm({ onLogin }: Props) {
               placeholder="Enter password"
               onChange={(e) => setPassword(e.target.value)}
             />
+
             <InputGroupAddon align="inline-end">
               <EyeOffIcon />
             </InputGroupAddon>
           </InputGroup>
+
           {errors.password && (
-            <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+            <p className="text-[#BA1A1A] text-xs md:text-sm mt-1">
+              {errors.password}
+            </p>
           )}
-        </Field>
+        </div>
       </div>
-      <div>
+
+      <div className="text-xs md:text-sm flex gap-2 mb-5 md:mb-6 font-LiberationSerif text-[#56423E]">
         <input type="radio" id="loggedIn" />
         <label htmlFor="loggedIn">Keep me logged in for 30 days</label>
       </div>
-      <button onClick={handleLogin} className="bg-amber-400 flex">
+
+      <button
+        onClick={handleLogin}
+        className="bg-linear-to-r from-[#9F402D] to-[#E2725B] w-full h-12 md:h-14 rounded-full flex items-center justify-center text-white text-sm md:text-base gap-2"
+      >
         Log In
         <ArrowRightIcon />
       </button>
