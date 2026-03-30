@@ -3,8 +3,11 @@ import NavBar from "@/components/NavBar";
 import { ArrowRight, Plus } from "lucide-react";
 
 import GoldenRetriever from "../../assets/goldenRetriever.png";
+import AddPetModal from "@/components/AddPetModal";
+import { useState } from "react";
 
 export default function PetDashboardPage() {
+  const [open, setOpen] = useState<boolean>(false);
   const statCard = [
     { title: "Total Residents", value: "24" },
     { title: "Active Adoptions", value: "12" },
@@ -60,13 +63,18 @@ export default function PetDashboardPage() {
             </p>
           </div>
 
-          <button className="flex items-center justify-center sm:justify-start gap-2 bg-[#9F402D] text-sm md:text-[16px] font-bold text-white px-4 md:px-5 py-2.5 md:py-3 rounded-full hover:opacity-90">
+          <button
+            onClick={() => setOpen(true)}
+            className="flex items-center justify-center sm:justify-start gap-2 bg-[#9F402D] text-sm md:text-[16px] font-bold text-white px-4 md:px-5 py-2.5 md:py-3 rounded-full hover:opacity-90"
+          >
             <div className="border-2 rounded-full border-white">
-              <Plus size={16} className="md:w-[18px] md:h-[18px]" />
+              <Plus size={16} className="md:w-4.5 md:h-4.5" />
             </div>
             Add New Pet
           </button>
         </div>
+
+        <AddPetModal isOpen={open} onClose={() => setOpen(false)} />
 
         {/* Stat Card */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
