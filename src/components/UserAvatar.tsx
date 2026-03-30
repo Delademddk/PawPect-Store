@@ -21,7 +21,7 @@ export default function UserAvatar() {
         <UserRound className="h-7 w-7 p-0.75 rounded-full border-2 border-gray-300 hover:border-blue-500 transition" />
       </button>
       {isOpen && (
-        <div className="absolute right-5 mt-2 w-30 rounded-md shadow-lg bg-white ring-1 ring-gray-300 ring-opacity-5 z-50">
+        <div className="absolute right-7 mt-1 w-30 rounded-md shadow-lg bg-white ring-1 ring-gray-300 ring-opacity-5 z-50">
           <div className="py-1">
             <a
               href="#profile"
