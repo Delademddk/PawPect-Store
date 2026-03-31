@@ -4,7 +4,13 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label";
-import { MailIcon, EyeOffIcon, LockIcon, ArrowRightIcon } from "lucide-react";
+import {
+  MailIcon,
+  EyeOffIcon,
+  Eye,
+  LockIcon,
+  ArrowRightIcon,
+} from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -21,6 +27,7 @@ export default function LoginForm({ onLogin }: Props) {
     email: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = () => {
     const newErrors = {
@@ -91,7 +98,7 @@ export default function LoginForm({ onLogin }: Props) {
               Password
             </Label>
 
-            <button className="text-xs md:text-sm text-primary">
+            <button className="text-xs md:text-sm cursor-pointer font-bold font-LiberationSerif text-[#006A6A]">
               Forgot password?
             </button>
           </div>
@@ -105,13 +112,16 @@ export default function LoginForm({ onLogin }: Props) {
 
             <InputGroupInput
               id="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Enter password"
               onChange={(e) => setPassword(e.target.value)}
             />
 
-            <InputGroupAddon align="inline-end">
-              <EyeOffIcon />
+            <InputGroupAddon
+              align="inline-end"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <EyeOffIcon className="cursor-pointer"/> : <Eye className="cursor-pointer"/>}
             </InputGroupAddon>
           </InputGroup>
 
@@ -130,7 +140,7 @@ export default function LoginForm({ onLogin }: Props) {
 
       <button
         onClick={handleLogin}
-        className="bg-linear-to-r from-[#9F402D] to-[#E2725B] w-full h-12 md:h-14 rounded-full flex items-center justify-center text-white text-sm md:text-base gap-2"
+        className="bg-linear-to-r from-[#9F402D] to-[#E2725B] w-full h-12 md:h-14 rounded-full flex cursor-pointer hover:brightness-120 items-center justify-center text-white text-sm md:text-base gap-2"
       >
         Log In
         <ArrowRightIcon />

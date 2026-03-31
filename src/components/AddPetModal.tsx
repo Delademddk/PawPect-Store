@@ -2,7 +2,6 @@ import { X, Camera } from "lucide-react";
 import { useState } from "react";
 import { InputGroup, InputGroupInput } from "./ui/input-group";
 import { Label } from "@/components/ui/label";
-// import { Input } from "./ui/input";
 
 type AddPetModalProps = {
   isOpen: boolean;

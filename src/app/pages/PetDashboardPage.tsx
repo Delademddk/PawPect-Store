@@ -1,13 +1,14 @@
 import NavBar from "@/components/NavBar";
-// import { useNavigate } from "react-router-dom";
-import { ArrowRight, Plus } from "lucide-react";
-
+import { ArrowRight, Plus, TriangleAlert } from "lucide-react";
 import GoldenRetriever from "../../assets/goldenRetriever.png";
 import AddPetModal from "@/components/AddPetModal";
 import { useState } from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 export default function PetDashboardPage() {
   const [open, setOpen] = useState<boolean>(false);
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+
   const statCard = [
     { title: "Total Residents", value: "24" },
     { title: "Active Adoptions", value: "12" },
@@ -128,7 +129,10 @@ export default function PetDashboardPage() {
                     {pet.note}
                   </p>
 
-                  <button className="bg-[#90EFEF] p-1.5 md:p-2 rounded-full hover:opacity-90">
+                  <button
+                    onClick={() => setOpenDialog(true)}
+                    className="bg-[#90EFEF] p-1.5 md:p-2 rounded-full hover:opacity-90"
+                  >
                     <ArrowRight size={14} className="md:w-4 md:h-4" />
                   </button>
                 </div>
@@ -137,6 +141,25 @@ export default function PetDashboardPage() {
           ))}
         </div>
       </div>
+      <Dialog open={openDialog}  onOpenChange={setOpenDialog}>
+        <DialogContent className="lg:max-w-lg p-9 rounded-[50px] " showCloseButton={false}>
+          <div className="flex flex-col items-center">
+            <div className="rounded-full bg-[radial-gradient(circle,#FFDAD6_0%,#FFDAD6_30%,transparent_100%)] flex justify-center items-center  w-20 h-20">
+              <TriangleAlert className="w-7.5 h-7.5 text-[#BA1A1A] " />
+            </div>
+            <h2 className="text-[24px] mb-3 font-bold ">Remove from Sanctuary?</h2>
+            <p className="text-[16px] mb-7 ">
+              Are you sure you want to delete <span className="font-bold">Whiskers</span> ? This action will
+              permanently remove their records from the sanctuary database and
+              cannot be undone
+            </p>
+            <div className="flex flex-col w-full gap-3">
+              <button className="bg-[#BA1A1A] rounded-full h-15 text-white hover:brightness-80">Delete Whiskers</button>
+              <button /*onClick={onclose}*/ className="bg-[#E3E2E0] rounded-full h-14 hover:bg-[#FFDAD6]">Cancel</button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
