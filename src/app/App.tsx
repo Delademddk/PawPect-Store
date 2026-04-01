@@ -1,7 +1,8 @@
-import {  useState } from "react";
+import { useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import PetDashboardPage from "./pages/PetDashboardPage";
+import Demo from "../api/index";
 
 // function getIsLoggedIn() {
 //   return localStorage.getItem("isLoggedIn") === "true";
@@ -9,7 +10,7 @@ import PetDashboardPage from "./pages/PetDashboardPage";
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(
-    localStorage.getItem("isLoggedIn") === "true"
+    localStorage.getItem("isLoggedIn") === "true",
   );
 
   return (
@@ -18,7 +19,13 @@ export default function App() {
         <Routes>
           <Route
             path="/login"
-            element={isLoggedIn ? <Navigate to="/" /> : <LoginPage onLogin={() => setIsLoggedIn(true)} />}
+            element={
+              isLoggedIn ? (
+                <Navigate to="/" />
+              ) : (
+                <LoginPage onLogin={() => setIsLoggedIn(true)} />
+              )
+            }
           />
           <Route
             path="/"
@@ -26,6 +33,7 @@ export default function App() {
               isLoggedIn ? <PetDashboardPage /> : <Navigate to="/login" />
             }
           />
+          <Route path="/demo" element=<Demo /> />
         </Routes>
       </BrowserRouter>
     </div>
