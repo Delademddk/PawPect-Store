@@ -4,51 +4,116 @@ import GoldenRetriever from "../../assets/goldenRetriever.png";
 import AddPetModal from "@/components/AddPetModal";
 import { useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import StatCard from "@/components/StatCard";
+
+export type Pet = {
+  id: number;
+  name: string;
+  username: string;
+  email: string;
+  address?: AddressType;
+};
+
+type AddressType = {
+  city: string;
+  street: string;
+  suite: string;
+  zipcode: string;
+  geo?: string;
+};
+
+export type CreatePetInput = Pick<Pet, "name" | "email" | "username">;
+
+async function getUsers(): Promise<Pet[]> {
+  const res = await fetch("https://jsonplaceholder.typicode.com/users");
+  if (!res.ok) {
+    throw new Error("Something went wrong");
+  }
+  return res.json();
+}
+
+// async function addUsers() {
+//   const res = await fetch("https://jsonplaceholder.typicode.com/users", method: 'Post');
+//   if (!res.ok) {
+//     throw new Error("Something went wrong");
+//   }
+//   return res.json();
+// }
+
+async function createPet(newPet: CreatePetInput): Promise<Pet> {
+  const res = await fetch("https://jsonplaceholder.typicode.com/users", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(newPet),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to add users");
+  }
+
+  return res.json();
+}
+
+export function useCreatePet() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: createPet,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+    },
+  });
+}
+
+const statsItem = [
+  { title: "Total Residents", value: "jh" },
+  { title: "Names that start with S", value: "" },
+  { title: "People in Gwenborough", value: "" },
+  { title: "People with a Company", value: "" },
+];
 
 export default function PetDashboardPage() {
   const [open, setOpen] = useState<boolean>(false);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
 
-  const statCard = [
-    { title: "Total Residents", value: "24" },
-    { title: "Active Adoptions", value: "12" },
-    { title: "Health Checks Due", value: "5" },
-    { title: "New Inquiries", value: "8" },
-  ];
-  const pets = [
-    {
-      name: "Cooper",
-      age: "2 years",
-      breed: "Golden Retriever",
-      status: "Available",
-      image: "/images/dog1.png",
-      note: "Last fed 2h ago",
-    },
-    {
-      name: "Luna",
-      age: "4 years",
-      breed: "Bombay Cat",
-      status: "Adopted",
-      image: "/images/cat.png",
-      note: "Found a home",
-    },
-    {
-      name: "Barnaby",
-      age: "1 year",
-      breed: "Pug",
-      status: "Available",
-      image: "/images/pug.png",
-      note: "Next checkup: Friday",
-    },
-    {
-      name: "Pip",
-      age: "6 months",
-      breed: "Terrier Mix",
-      status: "Available",
-      image: "/images/dog2.png",
-      note: "Highly Social",
-    },
-  ];
+  const {
+    data: pets = [],
+    isError,
+    isLoading,
+    error,
+  } = useQuery<Pet[], Error>({ queryKey: ["users"], queryFn: getUsers });
+
+  // useEffect(() => {
+  //   const fetchPets = async () => {
+  //     setIsLoading(true);
+  //     try {
+  //       const res = await fetch("https://jsonplaceholder.typicode.com/users");
+  //       if (!res.ok) {
+  //         throw new Error("Something went wrong");
+  //       }
+  //       const data = await res.json();
+
+  //       setPets(data);
+  //     } catch (error: any) {
+  //       setError(error);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+
+  //   fetchPets();
+  // }, []);
+  if (isError) {
+    return <div>Error... {error.message}</div>;
+  }
+
+  if (isLoading) {
+    return <div>Loading....</div>;
+  }
+
   return (
     <div>
       <NavBar />
@@ -77,27 +142,11 @@ export default function PetDashboardPage() {
 
         <AddPetModal isOpen={open} onClose={() => setOpen(false)} />
 
-        {/* Stat Card */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
-          {statCard.map((stat) => (
-            <div className="bg-[#F4F3F1] w-full h-24 md:h-28 lg:h-31 rounded-3xl md:rounded-[48px] flex items-center relative overflow-hidden">
-              <div className="border-l-4 border-amber-300 absolute h-full flex items-center">
-                <div className="px-4 md:px-6 lg:px-8">
-                  <p className="text-[10px] md:text-xs text-[#56423E] uppercase font-PlusJarta font-bold mb-1 md:mb-2">
-                    {stat.title}
-                  </p>
-                  <h2 className="text-lg md:text-2xl lg:text-3xl font-extrabold text-[#1A1C1A]">
-                    {stat.value}
-                  </h2>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <StatCard stats={statsItem} />
 
         {/* Pet Card */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-          {pets.map((pet) => (
+          {pets.map((pet: Pet) => (
             <div className="bg-white w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-sm">
               <div className="relative">
                 <img
@@ -108,10 +157,10 @@ export default function PetDashboardPage() {
 
                 <span
                   className={`absolute text-black font-PlusJarta top-2 md:top-3 right-2 md:right-3 px-2 md:px-3 py-1 text-[10px] md:text-xs uppercase rounded-full font-bold ${
-                    pet.status === "Available" ? "bg-[#E2725B]" : "bg-[#00A58E]"
+                    pet.id % 2 === 0 ? "bg-[#E2725B]" : "bg-[#00A58E]"
                   }`}
                 >
-                  {pet.status}
+                  {pet.id % 2 === 0 ? "Even" : "Odd"}
                 </span>
               </div>
 
@@ -121,12 +170,12 @@ export default function PetDashboardPage() {
                 </h3>
 
                 <p className="text-[#56423E] text-xs md:text-sm lg:text-[16px] font-medium mt-1">
-                  {pet.age} • {pet.breed}
+                  {pet.id} • {pet.address?.city}
                 </p>
 
                 <div className="flex justify-between items-center mt-3 md:mt-4">
                   <p className="text-[10px] md:text-sm text-[#56423E] line-clamp-1">
-                    {pet.note}
+                    {pet.name}
                   </p>
 
                   <button
@@ -141,21 +190,33 @@ export default function PetDashboardPage() {
           ))}
         </div>
       </div>
-      <Dialog open={openDialog}  onOpenChange={setOpenDialog}>
-        <DialogContent className="lg:max-w-lg p-9 rounded-[50px] " showCloseButton={false}>
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent
+          className="lg:max-w-lg p-9 rounded-[50px] "
+          showCloseButton={false}
+        >
           <div className="flex flex-col items-center">
             <div className="rounded-full bg-[radial-gradient(circle,#FFDAD6_0%,#FFDAD6_30%,transparent_100%)] flex justify-center items-center  w-20 h-20">
               <TriangleAlert className="w-7.5 h-7.5 text-[#BA1A1A] " />
             </div>
-            <h2 className="text-[24px] mb-3 font-bold ">Remove from Sanctuary?</h2>
+            <h2 className="text-[24px] mb-3 font-bold ">
+              Remove from Sanctuary?
+            </h2>
             <p className="text-[16px] mb-7 ">
-              Are you sure you want to delete <span className="font-bold">Whiskers</span> ? This action will
+              Are you sure you want to delete{" "}
+              <span className="font-bold">Whiskers</span> ? This action will
               permanently remove their records from the sanctuary database and
               cannot be undone
             </p>
             <div className="flex flex-col w-full gap-3">
-              <button className="bg-[#BA1A1A] rounded-full h-15 text-white hover:brightness-80">Delete Whiskers</button>
-              <button /*onClick={onclose}*/ className="bg-[#E3E2E0] rounded-full h-14 hover:bg-[#FFDAD6]">Cancel</button>
+              <button className="bg-[#BA1A1A] rounded-full h-15 text-white hover:brightness-80">
+                Delete Whiskers
+              </button>
+              <button
+                /*onClick={onclose}*/ className="bg-[#E3E2E0] rounded-full h-14 hover:bg-[#FFDAD6]"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </DialogContent>

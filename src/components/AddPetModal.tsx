@@ -2,6 +2,9 @@ import { X, Camera } from "lucide-react";
 import { useState } from "react";
 import { InputGroup, InputGroupInput } from "./ui/input-group";
 import { Label } from "@/components/ui/label";
+import type { CreatePetInput } from "../app/pages/PetDashboardPage";
+import { useCreatePet } from "../app/pages/PetDashboardPage";
+
 
 type AddPetModalProps = {
   isOpen: boolean;
@@ -9,7 +12,29 @@ type AddPetModalProps = {
 };
 
 export default function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
+  const { mutate, isPending, error } = useCreatePet();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [adopted, setAdopted] = useState<boolean>(false);
+
+  const handleSubmit = () => {
+    const payload: CreatePetInput = {
+      name: name,
+      email: email,
+      username: username,
+    };
+
+    mutate(payload, {
+      onSuccess: () => {
+        onClose();
+        setName("");
+        setEmail("");
+        setUsername("");
+        setAdopted(false);
+      },
+    });
+  };
 
   if (!isOpen) return null;
 
@@ -60,36 +85,42 @@ export default function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
                     id="petName"
                     type="text"
                     placeholder="e.g. Buddy"
+                    value={name}
+                    onChange={(event) => setName(event.target.value)}
                   />
                 </InputGroup>
               </div>
               <div>
                 <Label
                   className="ml-1 mb-2 text-sm font-bold"
-                  htmlFor="petName"
+                  htmlFor="email"
                 >
-                  Age
+                  Email
                 </Label>
 
                 <InputGroup className="px-4 md:px-5 bg-[#E3E2E0] h-12 md:h-14 rounded-full">
                   <InputGroupInput
-                    id="petName"
-                    type="text"
-                    placeholder="e.g. 2 years"
+                    id="email"
+                    type="email"
+                    placeholder="e.g. buddy@example.com"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
                   />
                 </InputGroup>
               </div>
             </div>
             <div>
-              <Label className="ml-1 mb-2 text-sm font-bold" htmlFor="petName">
-                Breed
+              <Label className="ml-1 mb-2 text-sm font-bold" htmlFor="username">
+                Username
               </Label>
 
               <InputGroup className="w-full px-4 md:px-5 bg-[#E3E2E0] h-12 md:h-14 rounded-full">
                 <InputGroupInput
-                  id="petName"
+                  id="username"
                   type="text"
-                  placeholder="e.g. Labrador Retriever"
+                  placeholder="e.g. buddy123"
+                  value={username}
+                  onChange={(event) => setUsername(event.target.value)}
                 />
               </InputGroup>
             </div>
@@ -126,9 +157,14 @@ export default function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
             Cancel
           </button>
 
-          <button className="flex-1 bg-[#A64632] text-white rounded-full py-3 font-bold">
+          <button
+            onClick={handleSubmit}
+            disabled={isPending}
+            className="flex-1 bg-[#A64632] text-white rounded-full py-3 font-bold"
+          >
             Save Pet
           </button>
+          {error && <p>Something went wrong</p>}
         </div>
       </div>
     </div>
