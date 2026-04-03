@@ -7,6 +7,8 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import StatCard from "@/components/StatCard";
 
+const PETS_QUERY_KEY = ["pets"];
+
 export type Pet = {
   id: number;
   name: string;
@@ -63,7 +65,31 @@ export function useCreatePet() {
   return useMutation({
     mutationFn: createPet,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: PETS_QUERY_KEY });
+    },
+  });
+}
+
+async function deletePet(petId: Pet["id"]): Promise<void> {
+  const res = await fetch(`https://jsonplaceholder.typicode.com/users/${petId}`, {
+    method: "DELETE",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to delete pet");
+  }
+}
+
+function useDeletePet() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: deletePet,
+    onSuccess: (_, deletedPetId) => {
+      queryClient.setQueryData<Pet[]>(PETS_QUERY_KEY, (currentPets = []) =>
+        currentPets.filter((pet) => pet.id !== deletedPetId),
+      );
+      queryClient.invalidateQueries({ queryKey: PETS_QUERY_KEY });
     },
   });
 }
@@ -78,13 +104,33 @@ const statsItem = [
 export default function PetDashboardPage() {
   const [open, setOpen] = useState<boolean>(false);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
+  const { mutate: deletePetMutate, isPending: isDeletingPet } = useDeletePet();
 
   const {
     data: pets = [],
     isError,
     isLoading,
     error,
-  } = useQuery<Pet[], Error>({ queryKey: ["users"], queryFn: getUsers });
+  } = useQuery<Pet[], Error>({ queryKey: PETS_QUERY_KEY, queryFn: getUsers });
+
+  const handleOpenDeleteDialog = (pet: Pet) => {
+    setSelectedPet(pet);
+    setOpenDialog(true);
+  };
+
+  const handleDeletePet = () => {
+    if (!selectedPet) {
+      return;
+    }
+
+    deletePetMutate(selectedPet.id, {
+      onSuccess: () => {
+        setOpenDialog(false);
+        setSelectedPet(null);
+      },
+    });
+  };
 
   // useEffect(() => {
   //   const fetchPets = async () => {
@@ -179,7 +225,7 @@ export default function PetDashboardPage() {
                   </p>
 
                   <button
-                    onClick={() => setOpenDialog(true)}
+                    onClick={() => handleOpenDeleteDialog(pet)}
                     className="bg-[#90EFEF] p-1.5 md:p-2 rounded-full hover:opacity-90"
                   >
                     <ArrowRight size={14} className="md:w-4 md:h-4" />
@@ -190,7 +236,15 @@ export default function PetDashboardPage() {
           ))}
         </div>
       </div>
-      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+      <Dialog
+        open={openDialog}
+        onOpenChange={(nextOpen) => {
+          setOpenDialog(nextOpen);
+          if (!nextOpen) {
+            setSelectedPet(null);
+          }
+        }}
+      >
         <DialogContent
           className="lg:max-w-lg p-9 rounded-[50px] "
           showCloseButton={false}
@@ -204,16 +258,26 @@ export default function PetDashboardPage() {
             </h2>
             <p className="text-[16px] mb-7 ">
               Are you sure you want to delete{" "}
-              <span className="font-bold">Whiskers</span> ? This action will
-              permanently remove their records from the sanctuary database and
-              cannot be undone
+              <span className="font-bold">{selectedPet?.name ?? "this pet"}</span>
+              ? This action will permanently remove their records from the
+              sanctuary database and cannot be undone
             </p>
             <div className="flex flex-col w-full gap-3">
-              <button className="bg-[#BA1A1A] rounded-full h-15 text-white hover:brightness-80">
-                Delete Whiskers
+              <button
+                onClick={handleDeletePet}
+                disabled={!selectedPet || isDeletingPet}
+                className="bg-[#BA1A1A] rounded-full h-15 text-white hover:brightness-80 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {isDeletingPet
+                  ? "Deleting..."
+                  : `Delete ${selectedPet?.name ?? "Pet"}`}
               </button>
               <button
-                /*onClick={onclose}*/ className="bg-[#E3E2E0] rounded-full h-14 hover:bg-[#FFDAD6]"
+                onClick={() => {
+                  setOpenDialog(false);
+                  setSelectedPet(null);
+                }}
+                className="bg-[#E3E2E0] rounded-full h-14 hover:bg-[#FFDAD6]"
               >
                 Cancel
               </button>
