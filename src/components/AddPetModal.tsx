@@ -1,9 +1,10 @@
 import { X, Camera } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { InputGroup, InputGroupInput } from "./ui/input-group";
 import { Label } from "@/components/ui/label";
 import type { CreatePetInput } from "../app/pages/PetDashboardPage";
 import { useCreatePet } from "../app/pages/PetDashboardPage";
+import { toast } from "sonner";
 
 
 type AddPetModalProps = {
@@ -17,6 +18,7 @@ export default function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [adopted, setAdopted] = useState<boolean>(false);
+  const [isAdded, setIsAdded] = useState(false);
 
   const handleSubmit = () => {
     const payload: CreatePetInput = {
@@ -27,6 +29,7 @@ export default function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
 
     mutate(payload, {
       onSuccess: () => {
+        setIsAdded(true);
         onClose();
         setName("");
         setEmail("");
@@ -35,6 +38,13 @@ export default function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
       },
     });
   };
+
+  useEffect(() => {
+    if (isAdded) {
+      toast.success("Pet added successfully");
+      setIsAdded(false);
+    }
+  }, [isAdded]);
 
   if (!isOpen) return null;
 

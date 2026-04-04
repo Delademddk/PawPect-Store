@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import PetDashboardPage from "./pages/PetDashboardPage";
 import Demo from "../api/index";
+import { Toaster } from "sonner";
 
 // function getIsLoggedIn() {
 //   return localStorage.getItem("isLoggedIn") === "true";
@@ -15,6 +16,7 @@ export default function App() {
 
   return (
     <div>
+      <Toaster position="top-center" />
       <BrowserRouter>
         <Routes>
           <Route

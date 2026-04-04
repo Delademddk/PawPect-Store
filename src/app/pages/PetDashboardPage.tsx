@@ -2,10 +2,11 @@ import NavBar from "@/components/NavBar";
 import { ArrowRight, Plus, TriangleAlert } from "lucide-react";
 import GoldenRetriever from "../../assets/goldenRetriever.png";
 import AddPetModal from "@/components/AddPetModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import StatCard from "@/components/StatCard";
+import { toast } from "sonner";
 
 const PETS_QUERY_KEY = ["pets"];
 
@@ -105,6 +106,7 @@ export default function PetDashboardPage() {
   const [open, setOpen] = useState<boolean>(false);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
+  const [isDeleted, setIsDeleted] = useState(false);
   const { mutate: deletePetMutate, isPending: isDeletingPet } = useDeletePet();
 
   const {
@@ -126,11 +128,19 @@ export default function PetDashboardPage() {
 
     deletePetMutate(selectedPet.id, {
       onSuccess: () => {
+        setIsDeleted(true);
         setOpenDialog(false);
         setSelectedPet(null);
       },
     });
   };
+
+  useEffect(() => {
+    if (isDeleted) {
+      toast.success("Pet deleted successfully");
+      setIsDeleted(false);
+    }
+  }, [isDeleted]);
 
   // useEffect(() => {
   //   const fetchPets = async () => {
