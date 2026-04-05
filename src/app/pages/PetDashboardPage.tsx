@@ -2,63 +2,21 @@ import NavBar from "@/components/NavBar";
 import { ArrowRight, Plus, TriangleAlert } from "lucide-react";
 import GoldenRetriever from "../../assets/goldenRetriever.png";
 import AddPetModal from "@/components/AddPetModal";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import StatCard from "@/components/StatCard";
 import { toast } from "sonner";
+import {
+  createPet,
+  deletePet,
+  getPets,
+  type Pet,
+} from "@/api/pets";
 
 const PETS_QUERY_KEY = ["pets"];
 
-export type Pet = {
-  id: number;
-  name: string;
-  username: string;
-  email: string;
-  address?: AddressType;
-};
-
-type AddressType = {
-  city: string;
-  street: string;
-  suite: string;
-  zipcode: string;
-  geo?: string;
-};
-
-export type CreatePetInput = Pick<Pet, "name" | "email" | "username">;
-
-async function getUsers(): Promise<Pet[]> {
-  const res = await fetch("https://jsonplaceholder.typicode.com/users");
-  if (!res.ok) {
-    throw new Error("Something went wrong");
-  }
-  return res.json();
-}
-
-// async function addUsers() {
-//   const res = await fetch("https://jsonplaceholder.typicode.com/users", method: 'Post');
-//   if (!res.ok) {
-//     throw new Error("Something went wrong");
-//   }
-//   return res.json();
-// }
-
-async function createPet(newPet: CreatePetInput): Promise<Pet> {
-  const res = await fetch("https://jsonplaceholder.typicode.com/users", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(newPet),
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to add users");
-  }
-
-  return res.json();
-}
+export type { CreatePetInput, Pet } from "@/api/pets";
 
 export function useCreatePet() {
   const queryClient = useQueryClient();
@@ -67,18 +25,12 @@ export function useCreatePet() {
     mutationFn: createPet,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: PETS_QUERY_KEY });
+      toast.success("Pet added successfully");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to add pet");
     },
   });
-}
-
-async function deletePet(petId: Pet["id"]): Promise<void> {
-  const res = await fetch(`https://jsonplaceholder.typicode.com/users/${petId}`, {
-    method: "DELETE",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to delete pet");
-  }
 }
 
 function useDeletePet() {
@@ -91,6 +43,10 @@ function useDeletePet() {
         currentPets.filter((pet) => pet.id !== deletedPetId),
       );
       queryClient.invalidateQueries({ queryKey: PETS_QUERY_KEY });
+      toast.success("Pet deleted successfully");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to delete pet");
     },
   });
 }
@@ -106,7 +62,6 @@ export default function PetDashboardPage() {
   const [open, setOpen] = useState<boolean>(false);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
-  const [isDeleted, setIsDeleted] = useState(false);
   const { mutate: deletePetMutate, isPending: isDeletingPet } = useDeletePet();
 
   const {
@@ -114,7 +69,7 @@ export default function PetDashboardPage() {
     isError,
     isLoading,
     error,
-  } = useQuery<Pet[], Error>({ queryKey: PETS_QUERY_KEY, queryFn: getUsers });
+  } = useQuery<Pet[], Error>({ queryKey: PETS_QUERY_KEY, queryFn: getPets });
 
   const handleOpenDeleteDialog = (pet: Pet) => {
     setSelectedPet(pet);
@@ -128,40 +83,11 @@ export default function PetDashboardPage() {
 
     deletePetMutate(selectedPet.id, {
       onSuccess: () => {
-        setIsDeleted(true);
         setOpenDialog(false);
         setSelectedPet(null);
       },
     });
   };
-
-  useEffect(() => {
-    if (isDeleted) {
-      toast.success("Pet deleted successfully");
-      setIsDeleted(false);
-    }
-  }, [isDeleted]);
-
-  // useEffect(() => {
-  //   const fetchPets = async () => {
-  //     setIsLoading(true);
-  //     try {
-  //       const res = await fetch("https://jsonplaceholder.typicode.com/users");
-  //       if (!res.ok) {
-  //         throw new Error("Something went wrong");
-  //       }
-  //       const data = await res.json();
-
-  //       setPets(data);
-  //     } catch (error: any) {
-  //       setError(error);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-
-  //   fetchPets();
-  // }, []);
   if (isError) {
     return <div>Error... {error.message}</div>;
   }

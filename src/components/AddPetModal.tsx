@@ -1,11 +1,9 @@
 import { X, Camera } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { InputGroup, InputGroupInput } from "./ui/input-group";
 import { Label } from "@/components/ui/label";
 import type { CreatePetInput } from "../app/pages/PetDashboardPage";
 import { useCreatePet } from "../app/pages/PetDashboardPage";
-import { toast } from "sonner";
-
 
 type AddPetModalProps = {
   isOpen: boolean;
@@ -13,23 +11,22 @@ type AddPetModalProps = {
 };
 
 export default function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
-  const { mutate, isPending, error } = useCreatePet();
+  const { mutate, isPending} = useCreatePet();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [adopted, setAdopted] = useState<boolean>(false);
-  const [isAdded, setIsAdded] = useState(false);
 
   const handleSubmit = () => {
     const payload: CreatePetInput = {
       name: name,
       email: email,
       username: username,
+      adopted: adopted,
     };
 
     mutate(payload, {
       onSuccess: () => {
-        setIsAdded(true);
         onClose();
         setName("");
         setEmail("");
@@ -38,13 +35,6 @@ export default function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
       },
     });
   };
-
-  useEffect(() => {
-    if (isAdded) {
-      toast.success("Pet added successfully");
-      setIsAdded(false);
-    }
-  }, [isAdded]);
 
   if (!isOpen) return null;
 
@@ -101,10 +91,7 @@ export default function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
                 </InputGroup>
               </div>
               <div>
-                <Label
-                  className="ml-1 mb-2 text-sm font-bold"
-                  htmlFor="email"
-                >
+                <Label className="ml-1 mb-2 text-sm font-bold" htmlFor="email">
                   Email
                 </Label>
 
@@ -174,7 +161,7 @@ export default function AddPetModal({ isOpen, onClose }: AddPetModalProps) {
           >
             Save Pet
           </button>
-          {error && <p>Something went wrong</p>}
+          {/* {error && <p>{error.message}</p>} */}
         </div>
       </div>
     </div>
